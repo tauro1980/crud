@@ -5,6 +5,8 @@ import shortid from 'shortid'
 function App() {
   const [task, setTask] = useState("")
   const [tasks, setTasks] = useState([])
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState("")
 
   const addTask = (e) => {
     e.preventDefault()
@@ -19,13 +21,32 @@ function App() {
     }
 
     setTasks([ ...tasks, newTask ])
-
     setTask("")
+  }
+
+  const saveTask = (e) => {
+    e.preventDefault()
+    if(isEmpty(task)){
+      console.log("Task empty")
+      return
+    }
+
+    const editedTasks = tasks.map(item => item.id === id ? { id, name: task } : item)
+    setTasks(editedTasks)
+    setEditMode(false)
+    setTask("")
+    setId("")
   }
 
   const deleteTask = (id) => {
     const filteredTasks = tasks.filter(task => task.id !== id)
     setTasks(filteredTasks)
+  }
+
+  const editTask = (theTask) => {
+    setTask(theTask.name)
+    setEditMode(true)
+    setId(theTask.id)
   }
 
   return (
@@ -50,7 +71,12 @@ function App() {
                       >
                         Eliminar
                       </button>
-                      <button className="btn btn-warning btn-sm float-right">Editar</button>
+                      <button 
+                        className="btn btn-warning btn-sm float-right"
+                        onClick={() => editTask(task)}
+                      >
+                        Editar
+                      </button>
                     </li>
                   ))
                 }
@@ -59,8 +85,8 @@ function App() {
           }        
         </div>
         <div className="col-4">
-         <h4 className="text-center">Formulario</h4>
-         <form onSubmit={addTask}>
+         <h4 className="text-center">{ editMode ? "Modificar tarea" : "Agregar Tarea" }</h4>
+         <form onSubmit={ editMode ? saveTask : addTask}>
             <input
               type="text"
               className="form-control mb-2"
@@ -69,9 +95,9 @@ function App() {
               value={task}
             />  
             <button 
-              className="btn btn-dark btn-block"
+              className={ editMode ? "btn btn-warning btn-block" : "btn btn-dark btn-block" }
               type="submit">
-                Agregar
+                { editMode ? "Guardar" : "Agregar" }
             </button>  
          </form> 
         </div>
