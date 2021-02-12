@@ -28,3 +28,26 @@ export const addDocument = async(collection, data)=>{
     }
     return result
 }
+
+export const getDocument = async(collections, id)=>{
+    const result = { statusResponse : false, data : null, error : null }
+    try {
+        const response = db.collection(collections).doc(id).get()
+        result.data = { id : response.id, ...response.data() }
+        result.statusResponse = true
+    } catch (error) {
+        result.error = error
+    }
+    return result
+}
+
+export const updateDocument = async(collections, id, data)=>{
+    const result = { statusResponse : false, error : null }
+    try {
+        await db.collection(collections).doc(id).update(data)
+        result.statusResponse = true
+    } catch (error) {
+        result.error = error
+    }
+    return result
+}
